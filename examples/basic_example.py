@@ -31,14 +31,14 @@ class Product:
 
 
 # Пример данных
-products = [Product(name=f"Товар {i}", price=random.randint(100, 1000000)) for i in range(1, 101)]
+products = [Product(name=f"Product {i}", price=random.randint(100, 1_000_000)) for i in range(1, 101)]
 
 
 @dp.message(Command('start'))
 async def start_command(message: types.Message, state: FSMContext):
-    btn = await callback_manager.create_button('Товары', "product_list", message)
+    btn = await callback_manager.create_button('Products', product_list, message)
     data1 = InlineKeyboardButton(text="1", callback_data="1")
-    await message.answer('Меню', reply_markup=InlineKeyboardMarkup(inline_keyboard=[[btn, data1]]))
+    await message.answer('Menu', reply_markup=InlineKeyboardMarkup(inline_keyboard=[[btn, data1]]))
 
 
 @callback_manager.callback_handler()
@@ -74,12 +74,12 @@ async def product_list(callback_query: types.CallbackQuery, page: int = 1, back_
         user_data=callback_query
     )
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons + [pagination_buttons])
-    await callback_query.message.edit_text(text=f"Страница {page} из {total_pages}", reply_markup=keyboard)
+    await callback_query.message.edit_text(text=f"Page {page} of {total_pages}", reply_markup=keyboard)
 
 
 @callback_manager.callback_handler()
-async def product_detail(callback_query: types.CallbackQuery, product: dict):
-    await callback_query.answer(f"Вы выбрали {product['name']} ценой {product['price']}")
+async def product_detail(callback_query: types.CallbackQuery, product: Product):
+    await callback_query.answer(f"You selected {product.name} for {product.price}")
 
 
 async def main():
